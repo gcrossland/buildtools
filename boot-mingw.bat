@@ -7,7 +7,7 @@ set CMD_CP=I:\Apps\Platforms\Cygwin\bin\cp.exe
 set PLATFORM=WIN32_IA_32
 set LIBCACHEDIR=../../cache
 set CONFIG=debug
-set FLAGS=-std=gnu++11 --static -Wl,--demangle -O0 -gdwarf-2 -Wconversion -Wctor-dtor-privacy -Wnon-virtual-dtor -Wreorder -Wold-style-cast -Woverloaded-virtual -Wchar-subscripts -Wformat -Wmissing-braces -Wparentheses -Wsequence-point -Wreturn-type -Wunused-variable -Wstrict-aliasing -Wstrict-overflow -Wextra -Wfloat-equal -Wpointer-arith -Waddress -Wmissing-field-initializers -Winline -Winvalid-pch -Wdisabled-optimization -Wno-non-template-friend
+set FLAGS=-std=gnu++11 -static -Wl,--demangle -O0 -gdwarf-2 -Wconversion -Wsign-conversion -Wsign-compare -Wctor-dtor-privacy -Wnon-virtual-dtor -Wreorder -Wold-style-cast -Woverloaded-virtual -Wchar-subscripts -Wformat -Wmissing-braces -Wparentheses -Wsequence-point -Wreturn-type -Wunused-variable -Wstrict-aliasing -Wstrict-overflow -Wextra -Wfloat-equal -Wpointer-arith -Waddress -Wmissing-field-initializers -Winline -Winvalid-pch -Wdisabled-optimization -Wno-non-template-friend
 REM vs -std=c++11
 REM -Wp,-std=c99
 REM -Wno-type-limits
