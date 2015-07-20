@@ -62,4 +62,7 @@ def action_dependenciesdefn (list):
 
 
 if __name__ == "__main__":
-  main([arg.decode(sys.stdin.encoding) for arg in sys.argv[1:]])
+  encoding = sys.stdin.encoding
+  if not encoding:
+    encoding = 'ascii'
+  main([arg.decode(encoding) for arg in sys.argv[1:]])
