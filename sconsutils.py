@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 #  SCons Utility Library
-#  © Geoff Crossland 2014, 2015
+#  © Geoff Crossland 2014-2016
 # ------------------------------------------------------------------------------
 from SCons.Script import *
 from SCons.Errors import UserError
@@ -342,9 +342,8 @@ def getEnv ():
 
       if config in ('release',):
         constructionVars['CPPDEFINES']['NDEBUG'] = None
-        constructionVars['CXXFLAGS'].extend(("-g0", "-flto"))
+        constructionVars['CXXFLAGS'].extend(("-g0", "-fno-lto", "-O3"))
         # TODO consider -march, -mtune
-        constructionVars['LINKFLAGS'].extend(("-flto", "-O3"))
       if config in ('debug',):
         constructionVars['CXXFLAGS'].extend(("-g3", "-gdwarf-2", "-fno-omit-frame-pointer", "-fno-lto", "-O0"))
       if config in ('debugopt',):
