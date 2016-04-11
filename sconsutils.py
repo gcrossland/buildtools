@@ -121,7 +121,7 @@ def _getTimeInt ():
 # version and is deployed to LIBCACHEDIR; otherwise, it is only available for
 # the local application.
 # TODO only require the direct dependees
-def Lib (env, name, maj, min, dependees, extraFn = None):
+def Lib (env, name, maj, min, dependees = None, extraFn = None):
   if maj != -1 and min == -1:
     min = _getTimeInt()
 
@@ -165,11 +165,11 @@ def Lib (env, name, maj, min, dependees, extraFn = None):
 ##
 # Builds the C++ application binary of the given name (based on the source files
 # in the dir), ensuring that the listed dependencies are fulfilled.
-def App (env, name, dependees, objs, extraFn = None):
+def App (env, name, libObjs, dependees = None, extraFn = None):
   dependeeList = _DependeeList(env, dependees)
   dependeeList.addList(_getEnvDependeeList(env))
 
-  objs = list(objs)
+  objs = list(libObjs)
 
   cpppath = list(dependeeList.getLibCacheLibDirPathNames(_DependeeList.INCLUDE))
   objs.extend(env.StaticObject(env.Glob("*.cpp"), CPPPATH = cpppath))
@@ -183,7 +183,7 @@ def App (env, name, dependees, objs, extraFn = None):
 # Utility to build a lib (with Lib()) and its corresponding application binary
 # (with App()).
 def LibAndApp (env, name, maj, min, dependees, extraFn = None, appDependees = None, appExtraFn = None):
-  return env.App(name, appDependees, env.Lib(name, maj, min, dependees, extraFn), appExtraFn)
+  return env.App(name, env.Lib(name, maj, min, dependees, extraFn), appDependees, appExtraFn)
 
 ##
 # Creates a variant tree (with VariantDir()) and then calls the given function
