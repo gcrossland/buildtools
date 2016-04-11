@@ -337,7 +337,7 @@ def getEnv ():
       constructionVars['ENV']['PATH'].append(toolGcc)
 
       # TODO consider -std=c++11, -Wno-type-limits, -Wall -Wextra
-      constructionVars['CXXFLAGS'].extend(("-std=gnu++11", "-Wno-conversion", "-Wsign-conversion", "-Wsign-compare", "-Wctor-dtor-privacy", "-Wnon-virtual-dtor", "-Wreorder", "-Wold-style-cast", "-Woverloaded-virtual", "-Wchar-subscripts", "-Wformat", "-Wmissing-braces", "-Wparentheses", "-Wsequence-point", "-Wreturn-type", "-Wunused-variable", "-Wstrict-aliasing", "-Wstrict-overflow", "-Wextra", "-Wfloat-equal", "-Wpointer-arith", "-Waddress", "-Wmissing-field-initializers", "-Winvalid-pch", "-Wdisabled-optimization", "-Wno-non-template-friend"))
+      constructionVars['CXXFLAGS'].extend(("-std=gnu++11", "-ftemplate-backtrace-limit=0", "-Wno-conversion", "-Wsign-conversion", "-Wsign-compare", "-Wctor-dtor-privacy", "-Wnon-virtual-dtor", "-Wreorder", "-Wold-style-cast", "-Woverloaded-virtual", "-Wchar-subscripts", "-Wformat", "-Wmissing-braces", "-Wparentheses", "-Wsequence-point", "-Wreturn-type", "-Wunused-variable", "-Wstrict-aliasing", "-Wstrict-overflow", "-Wextra", "-Wfloat-equal", "-Wpointer-arith", "-Waddress", "-Wmissing-field-initializers", "-Winvalid-pch", "-Wdisabled-optimization", "-Wno-non-template-friend"))
       constructionVars['LINKFLAGS'].append("-Wl,--demangle")
 
       if config in ('release',):
