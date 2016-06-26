@@ -259,7 +259,7 @@ def getEnv ():
   if config in ('release', 'debug', 'debugopt'): # TODO 'prof', 'cppcheck'
     libCacheDir = ARGUMENTS.get('LIBCACHEDIR', None)
     if libCacheDir is None:
-      libCacheDir = os_.path.join(os_.pardir, os_.pardir, "cache")
+      libCacheDir = os_.path.join(os_.path.dirname(__file__), "cache")
       print "LIBCACHEDIR not specified; using " + libCacheDir
     libCacheDir = os_.path.abspath(libCacheDir)
 
