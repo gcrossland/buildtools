@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # ------------------------------------------------------------------------------
 #  SCons Utility Library
-#  © Geoff Crossland 2014-2016
+#  © Geoff Crossland 2014-2017
 # ------------------------------------------------------------------------------
 from SCons.Script import *
 from SCons.Errors import UserError
@@ -12,8 +12,6 @@ import shutil
 import sys
 import platform
 import SCons.Util
-
-
 
 def _listDir (path, leafNamePattern):
   if isinstance(leafNamePattern, basestring):
@@ -251,10 +249,41 @@ class _ArgError (_SyntaxError):
 ##
 # Returns a construction environment (which may or may not be the default)
 # initialised according to the variables specified on the command line. It
-# includes sconsutils' extra construction variables (config, libCacheDir,
-# hostOs, hostArch, os, arch, tool and oDir), pseudo-Builders (Lib(), App() and
+# includes sconsutils' extra construction variables (hostOs, hostArch, config,
+# libCacheDir, os, arch, tool and oDir), pseudo-Builders (Lib(), App() and
 # LibAndApp()) and construction environment methods (InVariantDir()).
 def getEnv ():
+  hostOs = _mapByPrefix(sys.platform, (
+    ("riscos", 'riscos'),
+    ("win32", 'win32'),
+    ("linux", 'posix'),
+    ("cygwin", 'posix'),
+    ("sunos", 'posix'),
+    ("darwin", 'posix'),
+    ("freebsd", 'posix')
+  ))
+  if hostOs is None:
+    raise UserError("'" + sys.platform + "' is an unknown platform.")
+
+  hostArch = _mapByPrefix(platform.machine().lower(), (
+    ("aarch64", 'arm_64'),
+    ("armv", 'arm_32'),
+    ("x86_64", 'x86_64'),
+    ("amd64", 'x86_64'),
+    ("x86", 'x86_32'),
+    ("i386", 'x86_32'),
+    ("i486", 'x86_32'),
+    ("i586", 'x86_32'),
+    ("i686", 'x86_32')
+  ))
+  if hostArch is None:
+    raise UserError("'" + platform.machine() + "' is an unknown architecture.")
+
+  constructionVars = dict(
+    hostOs = hostOs,
+    hostArch = hostArch
+  )
+
   config = ARGUMENTS.get('CONFIG', None)
   if config in ('release', 'debug', 'debugopt'): # TODO 'prof', 'cppcheck'
     libCacheDir = ARGUMENTS.get('LIBCACHEDIR', None)
@@ -262,32 +291,6 @@ def getEnv ():
       libCacheDir = os_.path.join(os_.path.dirname(__file__), "cache")
       print "LIBCACHEDIR not specified; using " + libCacheDir
     libCacheDir = os_.path.abspath(libCacheDir)
-
-    hostOs = _mapByPrefix(sys.platform, (
-      ("riscos", 'riscos'),
-      ("win32", 'win32'),
-      ("linux", 'posix'),
-      ("cygwin", 'posix'),
-      ("sunos", 'posix'),
-      ("darwin", 'posix'),
-      ("freebsd", 'posix')
-    ))
-    if hostOs is None:
-      raise UserError("'" + sys.platform + "' is an unknown platform.")
-
-    hostArch = _mapByPrefix(platform.machine().lower(), (
-      ("aarch64", 'arm_64'),
-      ("armv", 'arm_32'),
-      ("x86_64", 'x86_64'),
-      ("amd64", 'x86_64'),
-      ("x86", 'x86_32'),
-      ("i386", 'x86_32'),
-      ("i486", 'x86_32'),
-      ("i586", 'x86_32'),
-      ("i686", 'x86_32')
-    ))
-    if hostArch is None:
-      raise UserError("'" + platform.machine() + "' is an unknown architecture.")
 
     arch = ARGUMENTS.get('ARCH', None)
     if arch is None:
@@ -310,11 +313,9 @@ def getEnv ():
     else:
       raise _ArgError('OS', os, 'CONFIG', config)
 
-    constructionVars = dict(
+    constructionVars.update(
       config = config,
       libCacheDir = libCacheDir,
-      hostOs = hostOs,
-      hostArch = hostArch,
       os = os,
       arch = arch,
       fullconfig = config + "-" + os + "-" + arch,
@@ -373,7 +374,7 @@ def getEnv ():
   else:
     raise _ArgError('CONFIG', config)
 
-  if sys.platform == "win32":
+  if hostOs in ('win32',):
     #for k in ('SystemDrive', 'SystemRoot', 'TEMP', 'TMP', 'COMSPEC', 'PATHEXT'):
     #  if k in os_.environ:
     #    constructionVars['ENV'][k] = os_.environ[k]
