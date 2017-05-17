@@ -12,6 +12,7 @@ import shutil
 import sys
 import platform
 import SCons.Util
+import SCons.Subst
 
 def _listDir (path, leafNamePattern):
   if isinstance(leafNamePattern, basestring):
@@ -390,6 +391,30 @@ def getEnv ():
       else:
         strV = str(v)
       os_.environ[k] = strV
+
+  if hostOs in ('posix',):
+    # Ensure that the shell's full path is available.
+    constructionVars['SHELL'] = "/bin/sh"
+
+    # Ensure that shell escaping is done properly (see
+    # http://scons.tigris.org/issues/show_bug.cgi?id=2766).
+    def _escape(arg):
+        slash = '\\'
+        special = '"$`'
+
+        arg = arg.replace(slash, slash+slash)
+        for c in special:
+            arg = arg.replace(c, slash+c)
+
+        return '"' + arg + '"'
+    constructionVars['ESCAPE'] = _escape
+
+    # Ensure that shell string escaping (e.g. for single arguments which represent
+    # an entire command line) is performed in more cases (which might be too many
+    # cases, but we'll cross that bridge when we come to it).
+    def _is_literal(self):
+        return self.literal is None or self.literal
+    SCons.Subst.CmdStringHolder.is_literal = _is_literal
 
   env = DefaultEnvironment(**constructionVars)
   env.EnsureSConsVersion(2, 1, 0)
