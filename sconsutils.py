@@ -72,8 +72,11 @@ class _DependeeList (object):
     for dependee in list._dependees:
       self._add(dependee)
 
-  def __iter__ (self):
-    return (dependee for dependee in self._dependees)
+  def __len__ (self):
+    return len(self._dependees)
+
+  def __getitem__ (self, k):
+    return self._dependees[k]
 
   def getLibCacheLibDirPathNames (self, sub):
     return (os.path.join(self._libCachePathName, _DependeeList._getName(*dependee), sub) for dependee in self._dependees)
@@ -119,7 +122,7 @@ def _getTimeInt ():
 # the deployment set. If maj != 1, the library is marked as being the specified
 # version and is deployed to LIBCACHEDIR; otherwise, it is only available for
 # the local application.
-# TODO only require the direct dependees
+# TODO only require the direct dependees (and not in any order)
 def Lib (env, name, maj, min, dependees = None, extraFn = None):
   if maj != -1 and min == -1:
     min = _getTimeInt()
@@ -173,7 +176,7 @@ def App (env, name, libObjs, dependees = None, extraFn = None):
   cpppath = list(dependeeList.getLibCacheLibDirPathNames(_DependeeList.INCLUDE))
   objs.extend(env.StaticObject(env.Glob("*.cpp"), CPPPATH = cpppath))
 
-  outputs = env.Program(name, objs, LIBS = [name for name, maj, min in dependeeList], LIBPATH = list(dependeeList.getLibCacheLibDirPathNames(_DependeeList.LIB)))
+  outputs = env.Program(name, objs, LIBS = [name for name, maj, min in reversed(dependeeList)] + env['LIBS'], LIBPATH = list(dependeeList.getLibCacheLibDirPathNames(_DependeeList.LIB)))
   env.Default(env.Install("#", outputs))
 
   return outputs
@@ -326,6 +329,7 @@ def getEnv ():
       TARGET_ARCH = {'arm_32': None, 'arm_64': None, 'x86_32': "x86", 'x86_64': "x86_64"}[arch],
       CPPDEFINES = {'OS_' + os.upper(): None, 'ARCH_' + arch.upper(): None},
       CXXFLAGS = [],
+      LIBS = [],
       LINKFLAGS = []
     )
 
@@ -356,8 +360,8 @@ def getEnv ():
       if os in ('win32',):
         constructionVars['LINKFLAGS'].append("-static")
       if os in ('posix',):
-        # TODO -static-libstdc++ for LTO purposes? (unless we dynamically link with other C++ libs...)
-        pass
+        constructionVars['LIBS'].extend(("pthread", "stdc++"))
+        constructionVars['LINKFLAGS'].extend(("-static-libstdc++", "-Wl,--as-needed"))
 
       if arch in ('arm_32',):
         constructionVars['CXXFLAGS'].append("-march=armv3")
