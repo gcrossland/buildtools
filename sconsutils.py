@@ -380,10 +380,13 @@ def getEnv ():
     raise _ArgError('CONFIG', config)
 
   if hostOs in ('win32',):
-    #for k in ('SystemDrive', 'SystemRoot', 'TEMP', 'TMP', 'COMSPEC', 'PATHEXT'):
-    #  if k in os_.environ:
-    #    constructionVars['ENV'][k] = os_.environ[k]
-    #constructionVars['ENV']['PATH'].append(constructionVars['ENV']['SystemRoot'] + "\\System32")
+    # Since we're explicitly setting ENV, ensure that we manually set the mandatory
+    # environment variables (see SCons.Platform.win32.generate()).
+    for k in ('SystemDrive', 'SystemRoot', 'TEMP', 'TMP', 'COMSPEC'):
+      if k in os_.environ:
+        constructionVars['ENV'][k] = os_.environ[k]
+    constructionVars['ENV']['PATH'].append(constructionVars['ENV']['SystemRoot'] + "\\System32")
+    constructionVars['ENV']['PATHEXT'] = ".COM;.EXE;.BAT;.CMD"
 
     # Work around subprocess.Popen using PATH from this process' environment and not
     # from the supplied env (see https://bugs.python.org/issue15451).
