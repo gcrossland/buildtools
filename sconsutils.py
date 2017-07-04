@@ -143,10 +143,8 @@ def Lib (env, name, maj, min, dependees = None, extraFn = None):
   objs.extend(env.StaticObject(env.Glob("libraries/" + name + "_*.cpp"), CPPPATH = cpppath))
   if maj != -1:
     hdrs.extend(env.Glob("libraries/" + name + ".hpp"))
-    hdrs.extend(env.Glob("libraries/" + name + ".using"))
     hdrs.extend(env.Glob("libraries/" + name + ".ipp"))
     hdrs.extend(env.Glob("libraries/" + name + "_*.hpp"))
-    hdrs.extend(env.Glob("libraries/" + name + "_*.using"))
     hdrs.extend(env.Glob("libraries/" + name + "_*.ipp"))
 
   if extraFn:
