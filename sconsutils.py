@@ -122,7 +122,7 @@ def _getTimeInt ():
 # a function, with arguments env and the value to be used for CPPPATH, to
 # request to build any extra needed object files; it returns a tuple of a node
 # list of new objects and a node list of extra header files to be included in
-# the deployment set. If maj != 1, the library is marked as being the specified
+# the deployment set. If maj != -1, the library is marked as being the specified
 # version and is deployed to LIBCACHEDIR; otherwise, it is only available for
 # the local application.
 # TODO only require the direct dependees (and not in any order)
