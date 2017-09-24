@@ -46,15 +46,18 @@ class _DependeeList (object):
   def add (self, earliestDependee):
     (name, maj, min) = earliestDependee
     t = self._listLibCacheLibDirs(name, maj)
-    if len(t) != 1:
-      raise UserError("There are " + ("multiple", "no")[len(t) == 0] + " builds for " + _DependeeList._getName(name, maj) + " in " + self._libCachePathName + ".")
-    leafName = t[0]
-    try:
-      foundMin = int(leafName[leafName.rfind('.') + 1:])
-    except:
-      raise UserError(leafName + " is not a valid lib cache lib directory name.")
+    if len(t) > 1:
+      raise UserError("There are multiple builds for " + _DependeeList._getName(name, maj, "x") + " in " + self._libCachePathName + ".")
+    if len(t) == 0:
+      foundMin = -1
+    else:
+      leafName = t[0]
+      try:
+        foundMin = int(leafName[leafName.rfind('.') + 1:])
+      except:
+        raise UserError(leafName + " is not a valid lib cache lib directory name.")
     if foundMin < min:
-      raise UserError(leafName + " is available in " + self._libCachePathName + ", but that is too old a version.")
+      raise UserError("There are no builds for " + _DependeeList._getName(name, maj, min) + " or later in " + self._libCachePathName + ".")
 
     self._add((name, maj, foundMin))
 
